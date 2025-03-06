@@ -1,0 +1,43 @@
+services:
+  bot:
+    build: .
+    container_name: telegram_birthday_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - db
+    command: ["python", "bot.py"]
+
+  notifications:
+    build: .
+    container_name: telegram_birthday_notifications
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - db
+    command: ["python", "notifications.py"]
+
+  db:
+    image: postgres:17-alpine
+    container_name: postgres_db
+    env_file:
+      - .env
+    volumes:
+      - C:/ContainersData/birthdays/pg-init:/docker-entrypoint-initdb.d
+      - C:/ContainersData/birthdays/pg-data:/var/lib/postgresql/data
+    ports:
+      - "5423:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
