@@ -7,7 +7,7 @@ on:
 jobs:
   setup:
     name: Setup Environment
-    runs-on: [self-hosted, ${{ matrix.os }}]
+    runs-on: self-hosted-${{ matrix.os }}
     strategy:
       matrix:
         os: [linux, windows]
@@ -30,7 +30,7 @@ jobs:
 
   build:
     name: Build and Run Containers
-    runs-on: [self-hosted, ${{ matrix.os }}]
+    runs-on: self-hosted-${{ matrix.os }}
     needs: setup
     strategy:
       matrix:
@@ -40,18 +40,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Start Containers (Linux)
-        if: runner.os == 'Linux'
+      - name: Start Containers
         run: docker-compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
-
-      - name: Start Containers (Windows)
-        if: runner.os == 'Windows'
-        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
-        shell: powershell
+        shell: ${{ matrix.os == 'windows' && 'powershell' || 'bash' }}
 
   cleanup:
     name: Stop and Remove Containers
-    runs-on: [self-hosted, ${{ matrix.os }}]
+    runs-on: self-hosted-${{ matrix.os }}
     needs: build
     if: always()
     strategy:
@@ -62,11 +57,6 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Stop Containers (Linux)
-        if: runner.os == 'Linux'
+      - name: Stop Containers
         run: docker-compose -f ${{ needs.setup.outputs.compose_file }} down
-
-      - name: Stop Containers (Windows)
-        if: runner.os == 'Windows'
-        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} down
-        shell: powershell
+        shell: ${{ matrix.os == 'windows' && 'powershell' || 'bash' }}
