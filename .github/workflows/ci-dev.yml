@@ -21,7 +21,6 @@ jobs:
   build:
     name: 🏗️ Build and Run Containers
     needs: cleanup
-    runs-on: ubuntu-latest
     if: ${{ needs.cleanup.result == 'success' }}
     steps:
       - name: 📥 Checkout Repository
