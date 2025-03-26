@@ -7,7 +7,7 @@ on:
 jobs:
   setup_linux:
     name: 🛠️ Setup Environment (Linux)
-    runs-on: linux
+    runs-on: ubuntu-latest
     outputs:
       compose_file: ${{ steps.set_compose_file_linux.outputs.file }}
     steps:
@@ -46,7 +46,7 @@ jobs:
   cleanup_linux:
     name: 🧹 Stop and Remove Containers (Linux)
     needs: setup_linux
-    runs-on: linux
+    runs-on: ubuntu-latest
     if: ${{ needs.setup_linux.result == 'success' }}
     steps:
       - name: 📥 Checkout Repository
@@ -72,7 +72,7 @@ jobs:
   build_linux:
     name: 🏗️ Build and Run Containers (Linux)
     needs: cleanup_linux
-    runs-on: linux
+    runs-on: ubuntu-latest
     if: ${{ needs.cleanup_linux.result == 'success' }}
     steps:
       - name: 📥 Checkout Repository
