@@ -11,6 +11,16 @@ on:
 jobs:
   cleanup:
     name: 🧹 Stop and Remove Containers
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      DATABASE_HOST: db_dev
+      DATABASE_PORT: 5432
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: birthdays_db
+      POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH }}
+      POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH }}
+      TYPE_OF_PUBLICATION: dev
     runs-on: self-hosted
     steps:
       - name: 📥 Checkout Repository
@@ -21,6 +31,16 @@ jobs:
 
   build:
     name: 🏗️ Build and Run Containers
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      DATABASE_HOST: db_dev
+      DATABASE_PORT: 5432
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: birthdays_db
+      POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH }}
+      POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH }}
+      TYPE_OF_PUBLICATION: dev
     runs-on: self-hosted
     needs: cleanup
     steps:

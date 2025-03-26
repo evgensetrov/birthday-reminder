@@ -1,0 +1,55 @@
+services:
+  bot:
+    build: .
+    container_name: telegram_birthday_bot_{TYPE_OF_PUBLICATION}
+    restart: unless-stopped
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_DEV_TOKEN}
+      DATABASE_HOST: ${DATABASE_HOST_DEV}
+      DATABASE_PORT: ${DATABASE_PORT_DEV}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    depends_on:
+      - db
+    command: ["python", "bot.py"]
+
+  notifications:
+    build: .
+    container_name: telegram_birthday_notifications_{TYPE_OF_PUBLICATION}
+    restart: unless-stopped
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_DEV_TOKEN}
+      DATABASE_HOST: ${DATABASE_HOST_DEV}
+      DATABASE_PORT: ${DATABASE_PORT_DEV}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    depends_on:
+      - db
+    command: ["python", "notifications.py"]
+
+  db:
+    image: postgres:17-alpine
+    container_name: postgres_db_{TYPE_OF_PUBLICATION}
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_INITDB_ARGS: --locale-provider=icu --icu-locale=ru-RU
+      TZ: Europe/Moscow
+      PGTZ: Europe/Moscow
+    volumes:
+      - ${POSTGRES_INIT_PATH_DEV}:/docker-entrypoint-initdb.d
+      - ${POSTGRES_DATA_PATH_DEV}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2G
