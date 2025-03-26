@@ -12,14 +12,15 @@ jobs:
       matrix:
         os: [linux, windows]
     outputs:
-      compose_file: ${{ steps.set_compose_file.outputs.file }}
+      compose_file_linux: ${{ steps.set_compose_file_linux.outputs.file }}
+      compose_file_windows: ${{ steps.set_compose_file_windows.outputs.file }}
 
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
       - name: 🧠 Determine Compose File (Linux)
-        id: set_compose_file
+        id: set_compose_file_linux
         if: matrix.os == 'linux'
         shell: bash
         run: |
@@ -30,7 +31,7 @@ jobs:
           fi
 
       - name: 🧠 Determine Compose File (Windows)
-        id: set_compose_file
+        id: set_compose_file_windows
         if: matrix.os == 'windows'
         shell: powershell
         run: |
@@ -54,12 +55,12 @@ jobs:
 
       - name: 🛑 Stop Containers (Linux)
         if: matrix.os == 'linux'
-        run: docker-compose -f ${{ needs.build.outputs.compose_file }} down
+        run: docker-compose -f ${{ needs.build.outputs.compose_file_linux }} down
         shell: bash
 
       - name: 🛑 Stop Containers (Windows)
         if: matrix.os == 'windows'
-        run: docker compose -f ${{ needs.build.outputs.compose_file }} down
+        run: docker compose -f ${{ needs.build.outputs.compose_file_windows }} down
         shell: powershell
   
   build:
@@ -76,10 +77,10 @@ jobs:
 
       - name: ▶️ Start Containers (Linux)
         if: matrix.os == 'linux'
-        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
+        run: docker-compose -f ${{ needs.setup.outputs.compose_file_linux }} up -d --build
         shell: bash
 
       - name: ▶️ Start Containers (Windows)
         if: matrix.os == 'windows'
-        run: docker compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
+        run: docker compose -f ${{ needs.setup.outputs.compose_file_windows }} up -d --build
         shell: powershell
