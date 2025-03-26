@@ -48,7 +48,7 @@ jobs:
 
       - name: 🛑 Stop Containers (Windows)
         if: matrix.os == 'windows'
-        run: docker-compose -f ${{ needs.build.outputs.compose_file }} down
+        run: docker compose -f ${{ needs.build.outputs.compose_file }} down
         shell: powershell
   
   build:
@@ -70,5 +70,5 @@ jobs:
 
       - name: ▶️ Start Containers (Windows)
         if: matrix.os == 'windows'
-        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
+        run: docker compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
         shell: powershell
