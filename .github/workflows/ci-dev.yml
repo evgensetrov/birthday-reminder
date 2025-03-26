@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches:
-      - main
+      - 'dev/*'
   pull_request:
     branches:
-      - main 
+      - 'dev/*' 
 
 jobs:
   cleanup:
@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🛑 Stop Containers
-        run: docker compose -f docker-compose.yml down
+        run: docker compose -f docker-compose-dev.yml down
 
   build:
     name: 🏗️ Build and Run Containers
@@ -27,4 +27,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ▶️ Start Containers
-        run: docker compose -f docker-compose.yml up -d --build
+        run: docker compose -f docker-compose-dev.yml up -d --build
