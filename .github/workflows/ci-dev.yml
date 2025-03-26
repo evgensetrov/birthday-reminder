@@ -12,14 +12,14 @@ jobs:
   cleanup:
     name: 🧹 Stop and Remove Containers
     env:
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN_DEV }}
       DATABASE_HOST: db_dev
       DATABASE_PORT: 5432
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: birthdays_db
-      POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH }}
-      POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH }}
+      POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH_DEV }}
+      POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH_DEV }}
       TYPE_OF_PUBLICATION: dev
     runs-on: self-hosted
     steps:
@@ -32,14 +32,14 @@ jobs:
   build:
     name: 🏗️ Build and Run Containers
     env:
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_DEV_TOKEN }}
       DATABASE_HOST: db_dev
       DATABASE_PORT: 5432
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: birthdays_db
-      POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH }}
-      POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH }}
+      POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH_DEV }}
+      POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH_DEV }}
       TYPE_OF_PUBLICATION: dev
     runs-on: self-hosted
     needs: cleanup
