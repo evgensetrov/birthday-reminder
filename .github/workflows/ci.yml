@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 🛑 Stop Containers (Linux)
-        run: docker-compose -f ${{ needs.build.outputs.compose_file_linux }} down
+        run: docker compose -f ${{ needs.build.outputs.compose_file_linux }} down
         shell: bash
 
   cleanup_windows:
@@ -79,7 +79,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ▶️ Start Containers (Linux)
-        run: docker-compose -f ${{ needs.setup.outputs.compose_file_linux }} up -d --build
+        run: docker compose -f ${{ needs.setup.outputs.compose_file_linux }} up -d --build
         shell: bash
 
   build_windows:
