@@ -18,8 +18,9 @@ jobs:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: 🧠 Determine Compose File
+      - name: 🧠 Determine Compose File (Linux)
         id: set_compose_file
+        if: matrix.os == 'linux'
         shell: bash
         run: |
           if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
@@ -28,11 +29,21 @@ jobs:
             echo "file=docker-compose.dev.yml" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: 🧠 Determine Compose File (Windows)
+        id: set_compose_file
+        if: matrix.os == 'windows'
+        shell: powershell
+        run: |
+          if ($env:GITHUB_REF -eq "refs/heads/main") {
+            "file=docker-compose.yml" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          } else {
+            "file=docker-compose.dev.yml" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          }
+
   cleanup:
     name: 🧹 Stop and Remove Containers
-    needs: build
+    needs: setup
     runs-on: self-hosted-${{ matrix.os }}
-    if: always()
     strategy:
       matrix:
         os: [linux, windows]
@@ -53,7 +64,7 @@ jobs:
   
   build:
     name: 🏗️ Build and Run Containers
-    needs: setup
+    needs: cleanup
     runs-on: self-hosted-${{ matrix.os }}
     strategy:
       matrix:
