@@ -45,8 +45,8 @@ jobs:
 
   cleanup_linux:
     name: 🧹 Stop and Remove Containers (Linux)
-    needs: linux
-    runs-on: self-hosted-linux
+    needs: setup_linux
+    runs-on: linux
     if: ${{ needs.setup_linux.result == 'success' }}
     steps:
       - name: 📥 Checkout Repository
