@@ -21,6 +21,17 @@ env:
   COMPOSE_PROJECT_NAME: birthday-reminder-dev
 
 jobs:
+  check:
+    runs-on: self-hosted
+    steps:
+      - name: Check secret
+        run: |
+          $telegramBotToken = $env:TELEGRAM_BOT_TOKEN
+          $partialToken = $telegramBotToken.Substring(0, 7) 
+          Write-Host "TELEGRAM_BOT_TOKEN (7 symbols): $partialToken"
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_DEV_TOKEN }}
+
   cleanup:
     name: 🧹 Stop and Remove Containers
     runs-on: self-hosted
