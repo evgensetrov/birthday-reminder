@@ -21,6 +21,8 @@ jobs:
       POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH }}
       POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH }}
       TYPE_OF_PUBLICATION: prod
+      COMPOSE_PROJECT_NAME: birthday-reminder-prod
+      
     runs-on: self-hosted
     steps:
       - name: 📥 Checkout Repository
@@ -41,6 +43,7 @@ jobs:
       POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH }}
       POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH }}
       TYPE_OF_PUBLICATION: prod
+      COMPOSE_PROJECT_NAME: birthday-reminder-prod
       
     runs-on: self-hosted
     needs: cleanup

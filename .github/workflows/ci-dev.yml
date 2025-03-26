@@ -21,6 +21,7 @@ jobs:
       POSTGRES_INIT_PATH: C:/ContainersData/birthdays/pg-init-dev
       POSTGRES_DATA_PATH: C:/ContainersData/birthdays/pg-data-dev
       TYPE_OF_PUBLICATION: dev
+      COMPOSE_PROJECT_NAME: birthday-reminder-dev
     runs-on: self-hosted
     steps:
       - name: 📥 Checkout Repository
@@ -41,6 +42,7 @@ jobs:
       POSTGRES_INIT_PATH: C:/ContainersData/birthdays/pg-init-dev
       POSTGRES_DATA_PATH: C:/ContainersData/birthdays/pg-data-dev
       TYPE_OF_PUBLICATION: dev
+      COMPOSE_PROJECT_NAME: birthday-reminder-dev
     runs-on: self-hosted
     needs: cleanup
     steps:
