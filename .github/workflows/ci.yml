@@ -7,7 +7,7 @@ on:
 jobs:
   setup_linux:
     name: 🛠️ Setup Environment (Linux)
-    runs-on: self-hosted-linux
+    runs-on: linux
     outputs:
       compose_file: ${{ steps.set_compose_file_linux.outputs.file }}
     steps:
@@ -45,7 +45,7 @@ jobs:
 
   cleanup_linux:
     name: 🧹 Stop and Remove Containers (Linux)
-    needs: setup_linux
+    needs: linux
     runs-on: self-hosted-linux
     if: ${{ needs.setup_linux.result == 'success' }}
     steps:
@@ -71,7 +71,7 @@ jobs:
 
   build_linux:
     name: 🏗️ Build and Run Containers (Linux)
-    needs: cleanup_linux
+    needs: linux
     runs-on: self-hosted-linux
     if: ${{ needs.cleanup_linux.result == 'success' }}
     steps:
