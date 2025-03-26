@@ -1,7 +1,7 @@
 services:
   bot:
     build: .
-    container_name: telegram_birthday_bot
+    container_name: telegram_birthday_bot_{TYPE_OF_PUBLICATION}
     restart: unless-stopped
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
@@ -16,7 +16,7 @@ services:
 
   notifications:
     build: .
-    container_name: telegram_birthday_notifications
+    container_name: telegram_birthday_notifications_{TYPE_OF_PUBLICATION}
     restart: unless-stopped
     environment:
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
@@ -31,10 +31,13 @@ services:
 
   db:
     image: postgres:17-alpine
-    container_name: postgres_db
+    container_name: postgres_db_{TYPE_OF_PUBLICATION}
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_INITDB_ARGS: --locale-provider=icu --icu-locale=ru-RU
+      TZ: Europe/Moscow
+      PGTZ: Europe/Moscow
     volumes:
       - ${POSTGRES_INIT_PATH}:/docker-entrypoint-initdb.d
       - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
