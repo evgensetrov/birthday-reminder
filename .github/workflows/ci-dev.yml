@@ -8,20 +8,21 @@ on:
     branches:
       - 'dev/*' 
 
+env:
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_DEV_TOKEN }}
+  DATABASE_HOST: db_dev
+  DATABASE_PORT: 5432
+  POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+  POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+  POSTGRES_DB: birthdays_db
+  POSTGRES_INIT_PATH: C:/ContainersData/birthdays/pg-init-dev
+  POSTGRES_DATA_PATH: C:/ContainersData/birthdays/pg-data-dev
+  TYPE_OF_PUBLICATION: dev
+  COMPOSE_PROJECT_NAME: birthday-reminder-dev
+
 jobs:
   cleanup:
     name: 🧹 Stop and Remove Containers
-    env:
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN_DEV }}
-      DATABASE_HOST: db_dev
-      DATABASE_PORT: 5432
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DB: birthdays_db
-      POSTGRES_INIT_PATH: C:/ContainersData/birthdays/pg-init-dev
-      POSTGRES_DATA_PATH: C:/ContainersData/birthdays/pg-data-dev
-      TYPE_OF_PUBLICATION: dev
-      COMPOSE_PROJECT_NAME: birthday-reminder-dev
     runs-on: self-hosted
     steps:
       - name: 📥 Checkout Repository
@@ -32,17 +33,6 @@ jobs:
 
   build:
     name: 🏗️ Build and Run Containers
-    env:
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_DEV_TOKEN }}
-      DATABASE_HOST: db_dev
-      DATABASE_PORT: 5432
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DB: birthdays_db
-      POSTGRES_INIT_PATH: C:/ContainersData/birthdays/pg-init-dev
-      POSTGRES_DATA_PATH: C:/ContainersData/birthdays/pg-data-dev
-      TYPE_OF_PUBLICATION: dev
-      COMPOSE_PROJECT_NAME: birthday-reminder-dev
     runs-on: self-hosted
     needs: cleanup
     steps:
