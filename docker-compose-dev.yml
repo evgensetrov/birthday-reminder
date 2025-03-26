@@ -39,8 +39,8 @@ services:
       TZ: Europe/Moscow
       PGTZ: Europe/Moscow
     volumes:
-      - ${POSTGRES_INIT_PATH_DEV}:/docker-entrypoint-initdb.d
-      - ${POSTGRES_DATA_PATH_DEV}:/var/lib/postgresql/data
+      - ${POSTGRES_INIT_PATH}:/docker-entrypoint-initdb.d
+      - ${POSTGRES_DATA_PATH}:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
