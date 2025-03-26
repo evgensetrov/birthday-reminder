@@ -5,28 +5,72 @@ on:
   pull_request:
 
 jobs:
-  build-and-run:
-    name: Build and Run Docker Containers
-    runs-on: self-hosted
+  setup:
+    name: Setup Environment
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    outputs:
+      compose_file: ${{ steps.set-compose-file.outputs.file }}
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Determine Compose File
+        id: set-compose-file
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "COMPOSE_FILE=docker-compose.yml" >> $GITHUB_ENV
+            echo "file=docker-compose.yml" >> $GITHUB_OUTPUT
           else
-            echo "COMPOSE_FILE=docker-compose.dev.yml" >> $GITHUB_ENV
+            echo "file=docker-compose.dev.yml" >> $GITHUB_OUTPUT
           fi
+        shell: bash
 
-      - name: Stop and Remove Containers
-        if: always()
-        run: docker-compose -f ${{ env.COMPOSE_FILE }} down
+  build:
+    name: Build and Run Containers
+    runs-on: ${{ matrix.os }}
+    needs: setup
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
 
-      - name: Build and Start Containers
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Start Containers (Linux)
+        if: runner.os == 'Linux'
         run: |
-          docker-compose -f ${{ env.COMPOSE_FILE }} up -d --build
+          docker-compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
 
+      - name: Start Containers (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          docker-compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
+        shell: powershell
+
+  cleanup:
+    name: Stop and Remove Containers
+    runs-on: ${{ matrix.os }}
+    needs: build
+    if: always()
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Stop Containers (Linux)
+        if: runner.os == 'Linux'
+        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} down
+
+      - name: Stop Containers (Windows)
+        if: runner.os == 'Windows'
+        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} down
+        shell: powershell
       
