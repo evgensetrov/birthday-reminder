@@ -18,8 +18,8 @@ jobs:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: birthdays_db
-      POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH_DEV }}
-      POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH_DEV }}
+      POSTGRES_INIT_PATH: C:/ContainersData/birthdays/pg-init-dev
+      POSTGRES_DATA_PATH: C:/ContainersData/birthdays/pg-data-dev
       TYPE_OF_PUBLICATION: dev
     runs-on: self-hosted
     steps:
@@ -38,8 +38,8 @@ jobs:
       POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       POSTGRES_DB: birthdays_db
-      POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH_DEV }}
-      POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH_DEV }}
+      POSTGRES_INIT_PATH: C:/ContainersData/birthdays/pg-init-dev
+      POSTGRES_DATA_PATH: C:/ContainersData/birthdays/pg-data-dev
       TYPE_OF_PUBLICATION: dev
     runs-on: self-hosted
     needs: cleanup
