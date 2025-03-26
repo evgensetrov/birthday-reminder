@@ -6,57 +6,69 @@ on:
 
 jobs:
   setup:
-    name: Setup Environment
+    name: 🛠️ Setup Environment
     runs-on: self-hosted-${{ matrix.os }}
     strategy:
       matrix:
         os: [linux, windows]
     outputs:
-      compose_file: ${{ steps.set-compose-file.outputs.file }}
+      compose_file: ${{ steps.set_compose_file.outputs.file }}
 
     steps:
-      - name: Checkout Repository
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Determine Compose File
-        id: set-compose-file
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "file=docker-compose.yml" >> $GITHUB_OUTPUT
-          else
-            echo "file=docker-compose.dev.yml" >> $GITHUB_OUTPUT
-          fi
+      - name: 🧠 Determine Compose File
+        id: set_compose_file
         shell: bash
-
-  build:
-    name: Build and Run Containers
-    runs-on: self-hosted-${{ matrix.os }}
-    needs: setup
-    strategy:
-      matrix:
-        os: [linux, windows]
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Start Containers
-        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
-        shell: ${{ matrix.os == 'windows' && 'powershell' || 'bash' }}
+        run: |
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "file=docker-compose.yml" >> "$GITHUB_OUTPUT"
+          else
+            echo "file=docker-compose.dev.yml" >> "$GITHUB_OUTPUT"
+          fi
 
   cleanup:
-    name: Stop and Remove Containers
-    runs-on: self-hosted-${{ matrix.os }}
+    name: 🧹 Stop and Remove Containers
     needs: build
+    runs-on: self-hosted-${{ matrix.os }}
     if: always()
     strategy:
       matrix:
         os: [linux, windows]
 
     steps:
-      - name: Checkout Repository
+      - name: 📥 Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Stop Containers
-        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} down
-        shell: ${{ matrix.os == 'windows' && 'powershell' || 'bash' }}
+      - name: 🛑 Stop Containers (Linux)
+        if: matrix.os == 'linux'
+        run: docker-compose -f ${{ needs.build.outputs.compose_file }} down
+        shell: bash
+
+      - name: 🛑 Stop Containers (Windows)
+        if: matrix.os == 'windows'
+        run: docker-compose -f ${{ needs.build.outputs.compose_file }} down
+        shell: powershell
+  
+  build:
+    name: 🏗️ Build and Run Containers
+    needs: setup
+    runs-on: self-hosted-${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [linux, windows]
+
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: ▶️ Start Containers (Linux)
+        if: matrix.os == 'linux'
+        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
+        shell: bash
+
+      - name: ▶️ Start Containers (Windows)
+        if: matrix.os == 'windows'
+        run: docker-compose -f ${{ needs.setup.outputs.compose_file }} up -d --build
+        shell: powershell
