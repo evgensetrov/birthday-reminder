@@ -71,8 +71,8 @@ jobs:
 
   build_linux:
     name: 🏗️ Build and Run Containers (Linux)
-    needs: linux
-    runs-on: self-hosted-linux
+    needs: cleanup_linux
+    runs-on: linux
     if: ${{ needs.cleanup_linux.result == 'success' }}
     steps:
       - name: 📥 Checkout Repository
