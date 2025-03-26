@@ -5,16 +5,11 @@ on:
   pull_request:
 
 jobs:
-  setup:
-    name: 🛠️ Setup Environment
-    runs-on: self-hosted-${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [linux, windows]
+  setup_linux:
+    name: 🛠️ Setup Environment (Linux)
+    runs-on: self-hosted-linux
     outputs:
-      compose_file_linux: ${{ steps.set_compose_file_linux.outputs.file }}
-      compose_file_windows: ${{ steps.set_compose_file_windows.outputs.file }}
-
+      compose_file: ${{ steps.set_compose_file_linux.outputs.file }}
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
@@ -30,6 +25,15 @@ jobs:
             echo "file=docker-compose.dev.yml" >> "$GITHUB_OUTPUT"
           fi
 
+  setup_windows:
+    name: 🛠️ Setup Environment (Windows)
+    runs-on: self-hosted-windows
+    outputs:
+      compose_file: ${{ steps.set_compose_file_windows.outputs.file }}
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+      
       - name: 🧠 Determine Compose File (Windows)
         id: set_compose_file_windows
         if: matrix.os == 'windows'
@@ -41,14 +45,11 @@ jobs:
             "file=docker-compose.dev.yml" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           }
 
-  cleanup:
-    name: 🧹 Stop and Remove Containers
-    needs: setup
-    runs-on: self-hosted-${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [linux, windows]
-
+  cleanup_linux:
+    name: 🧹 Stop and Remove Containers (Linux)
+    needs: setup_linux
+    runs-on: self-hosted-linux
+    if: ${{ needs.setup_linux.result == 'success' }}
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
@@ -58,19 +59,25 @@ jobs:
         run: docker-compose -f ${{ needs.build.outputs.compose_file_linux }} down
         shell: bash
 
+  cleanup_windows:
+    name: 🧹 Stop and Remove Containers (Windows)
+    needs: setup_windows
+    runs-on: self-hosted-windows
+    if: ${{ needs.setup_windows.result == 'success' }}
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        
       - name: 🛑 Stop Containers (Windows)
         if: matrix.os == 'windows'
         run: docker compose -f ${{ needs.build.outputs.compose_file_windows }} down
         shell: powershell
-  
-  build:
-    name: 🏗️ Build and Run Containers
-    needs: cleanup
-    runs-on: self-hosted-${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [linux, windows]
 
+  build_linux:
+    name: 🏗️ Build and Run Containers (Linux)
+    needs: cleanup_linux
+    runs-on: self-hosted-linux
+    if: ${{ needs.cleanup_linux.result == 'success' }}
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
@@ -80,7 +87,18 @@ jobs:
         run: docker-compose -f ${{ needs.setup.outputs.compose_file_linux }} up -d --build
         shell: bash
 
+  build_windows:
+    name: 🏗️ Build and Run Containers (Windows)
+    needs: cleanup_windows
+    runs-on: self-hosted-windows
+    if: ${{ needs.cleanup_windows.result == 'success' }}
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
       - name: ▶️ Start Containers (Windows)
         if: matrix.os == 'windows'
         run: docker compose -f ${{ needs.setup.outputs.compose_file_windows }} up -d --build
         shell: powershell
+  
+  
