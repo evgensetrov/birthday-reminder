@@ -15,22 +15,12 @@ env:
   POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
   POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
   POSTGRES_DB: birthdays_db
-  POSTGRES_INIT_PATH: C:/ContainersData/birthdays/pg-init-dev
-  POSTGRES_DATA_PATH: C:/ContainersData/birthdays/pg-data-dev
+  POSTGRES_INIT_PATH: ${{ secrets.POSTGRES_INIT_PATH_DEV}}
+  POSTGRES_DATA_PATH: ${{ secrets.POSTGRES_DATA_PATH_DEV }}
   TYPE_OF_PUBLICATION: dev
   COMPOSE_PROJECT_NAME: birthday-reminder-dev
 
 jobs:
-  check:
-    runs-on: self-hosted
-    steps:
-      - name: Check secret
-        run: |
-          $telegramBotToken = $env:TELEGRAM_BOT_TOKEN
-          $partialToken = $telegramBotToken.Substring(0, 7) 
-          Write-Host "TELEGRAM_BOT_TOKEN (7 symbols): $partialToken"
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_DEV_TOKEN }}
 
   cleanup:
     name: 🧹 Stop and Remove Containers
