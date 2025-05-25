@@ -128,7 +128,7 @@ async def add_birthday_notify(callback: CallbackQuery, state: FSMContext) -> Non
                                       f"{'Напоминание:\n' }"\
                                       f"{'✅ за неделю\n' if data['notify_before_week'] else '❌ за неделю\n'}"\
                                       f"{'✅ за день\n' if data['notify_before_day'] else '❌ за день\n'}"\
-                                      f"{'✅ в ДР\n' if data['notify_in_today'] else '❌ за день\n'}"
+                                      f"{'✅ в ДР\n' if data['notify_in_today'] else '❌ в ДР\n'}"
                                       )
         logging.info(f"Пользователь {data["user_id"]} добавил ДР: {data}")
     else:
