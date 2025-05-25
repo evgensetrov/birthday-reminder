@@ -21,6 +21,16 @@ env:
   COMPOSE_PROJECT_NAME: birthday-reminder-dev
 
 jobs:
+  build:
+    name: 🏗️ Build Containers
+    runs-on: self-hosted
+    needs: cleanup
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Build Containers
+        run: docker build .
 
   cleanup:
     name: 🧹 Stop and Remove Containers
@@ -32,8 +42,8 @@ jobs:
       - name: 🛑 Stop Containers
         run: docker compose -f docker-compose-dev.yml down
 
-  build:
-    name: 🏗️ Build and Run Containers
+  run:
+    name: ▶️ Run Containers
     runs-on: self-hosted
     needs: cleanup
     steps:
@@ -41,4 +51,4 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ▶️ Start Containers
-        run: docker compose -f docker-compose-dev.yml up -d --build
+        run: docker compose -f docker-compose-dev.yml up -d
