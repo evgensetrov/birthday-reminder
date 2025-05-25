@@ -153,15 +153,47 @@ def list_birthdays_all(days_delta: int = 0) -> list:
     try:
         conn = get_conn()
         with conn.cursor() as cur:
-            cur.execute(
+            match days_delta:
+                case 0:
+                    cur.execute(
+                        """
+                        SELECT user_id, array_to_string(array_agg(name), ', ') as name FROM birthdays
+                        WHERE EXTRACT(DAY FROM birthday) = EXTRACT(DAY FROM CURRENT_DATE)
+                        AND EXTRACT(MONTH FROM birthday) = EXTRACT(MONTH FROM CURRENT_DATE)
+                        AND notify_in_today
+                        GROUP BY user_id;
+                        """,
+                    )
+                case 1:
+                    cur.execute(
+                        """
+                        SELECT user_id, array_to_string(array_agg(name), ', ') as name FROM birthdays
+                        WHERE EXTRACT(DAY FROM birthday) = EXTRACT(DAY FROM CURRENT_DATE + 1)
+                        AND EXTRACT(MONTH FROM birthday) = EXTRACT(MONTH FROM CURRENT_DATE + 1)
+                        AND notify_before_day
+                        GROUP BY user_id
+                        """,
+                    )
+                case 7:
+                    cur.execute(
+                        """
+                        SELECT user_id, array_to_string(array_agg(name), ', ') as name FROM birthdays
+                        WHERE EXTRACT(DAY FROM birthday) = EXTRACT(DAY FROM CURRENT_DATE + 7)
+                        AND EXTRACT(MONTH FROM birthday) = EXTRACT(MONTH FROM CURRENT_DATE + 7)
+                        AND notify_before_week
+                        GROUP BY user_id
+                        """,
+                    )
+                case _:
+                    cur.execute(
                         """
                         SELECT user_id, array_to_string(array_agg(name), ', ') as name FROM birthdays
                         WHERE EXTRACT(DAY FROM birthday) = EXTRACT(DAY FROM CURRENT_DATE + %s)
                         AND EXTRACT(MONTH FROM birthday) = EXTRACT(MONTH FROM CURRENT_DATE + %s)
-                        AND notify_in_today
-                        GROUP BY user_id;
-                        """, (days_delta, days_delta),
-                        )
+                        GROUP BY user_id
+                        """,
+                        (days_delta, days_delta),
+                    )
             columns = [desc[0] for desc in cur.description]
             rows = cur.fetchall()
             result = [dict(zip(columns, row)) for row in rows]
