@@ -1,4 +1,4 @@
-name: CI
+name: CI-dev
 
 on:
   push:
@@ -24,7 +24,6 @@ jobs:
   build:
     name: 🏗️ Build Containers
     runs-on: self-hosted
-    needs: cleanup
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
@@ -35,6 +34,7 @@ jobs:
   cleanup:
     name: 🧹 Stop and Remove Containers
     runs-on: self-hosted
+    needs: build
     steps:
       - name: 📥 Checkout Repository
         uses: actions/checkout@v4
